@@ -3,9 +3,10 @@ f(x) = a(x^3) + b(x^2) + c(x) + d
 where a, b , c are coefficients, d is a constant and x is a variable.
 
 This program will request inputs for coefficients and the constant.
-Then find the possible root using linear iteration.
+Then find the possible root using the Newton Raphson Iterative Method.
 """
 
+from sympy import * 
 import math
 
 print("Given the polynomial, \n f(x) = a(x^3) + b(x^2) + c(x) + d \nIf the polynomial is quadratic, let 'a' = 0 "
@@ -48,13 +49,50 @@ ysol = (a * (y ** 3)) + (b * (y ** 2)) + (c * y) + d
 # noinspection PyUnboundLocalVariable
 zsol = (a * (z ** 3)) + (b * (z ** 2)) + (c * z) + d
 
-xvar = 0
-while True:
-    xprev = xvar
-    # noinspection PyUnboundLocalVariable
-    xnpone = (-1 / c) * ((a * xvar ** 3) + (b * xvar ** 2) + d)
+if ysol > 0 and zsol < 0:
+	print("\n")
+elif ysol < 0 and zsol > 0:
+	print("\n")
+elif ysol == 0:
+	print("\nThe solution to the equation is", y)
+elif zsol == 0:
+	print("\nThe solution to the equation is", z)
+elif ysol > 0 and zsol > 0:
+	print("\nThe solutions of y and z seem to be positive. Therefore, there is no root between those points.")
+	exit()
+elif ysol < 0 and zsol < 0:
+	print("\nThe solutions of y and z seem to be negative. Therefore, there is no root between those points")
+	exit()
+else:
+	print("\nThere seem to be no root between the points y and z given.")
+	exit()
 
-    xvar = xnpone
+
+myList = [ysol, zsol]
+myNumber = 0
+
+closest = min(myList, key=lambda x: abs(x-myNumber))
+
+if ysol == closest:
+	xnought = y
+elif zsol == closest:
+	xnought = z
+
+x, p = symbols('x p') 
+expr = (a * (x ** 3)) + (b * (x ** 2)) + (c * x) + d
+expr_diff = Derivative(expr, x)   
+
+derivativeSol = format(expr_diff.doit().subs({x:xnought}))
+derivativeSol = float(derivativeSol)
+
+xnought = xnought - ((a * (xnought ** 3)) + (b * (xnought ** 2)) + (c * xnought) + d) /derivativeSol
+
+while True:
+    xprev = xnought
+    # noinspection PyUnboundLocalVariable
+    xnpone = xnought - ((a * (xnought ** 3)) + (b * (xnought ** 2)) + (c * xnought) + d) /derivativeSol
+
+    xnought = xnpone
     xdif = xnpone - xprev
     if xdif < 0.0000001:
         break
